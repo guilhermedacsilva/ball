@@ -1,0 +1,5 @@
+android sdk folder
+
+C:\Users\guilh_000\AppData\Local\Android\sdk
+
+

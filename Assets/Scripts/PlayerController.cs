@@ -11,23 +11,32 @@ public class PlayerController : MonoBehaviour {
 
     private Rigidbody rb;
     private int count;
-    private static int levelNumber = 1;
+    private int qntForWin;
+    private static int levelNumber = 0;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         count = 0;
-        SetCountText();
         winText.text = "";
+        qntForWin = GameObject.FindGameObjectsWithTag("Pick Up").Length;
+        SetCountText();
     }
 
 	void FixedUpdate ()
     {
         float moveHorizontal = Input.GetAxis("Horizontal");
         float moveVertical = Input.GetAxis("Vertical");
+        float jump = Input.GetKeyDown(KeyCode.Space) && transform.position.y == 0.5 ? 20 : 0;
 
-        Vector3 movement = new Vector3(moveHorizontal, 0, moveVertical);
+        if (SystemInfo.deviceType == DeviceType.Handheld)
+        {
+            moveHorizontal = Input.acceleration.x;
+            moveVertical = Input.acceleration.y;
+            jump = 0;
+        }
 
+        Vector3 movement = new Vector3(moveHorizontal, jump, moveVertical);
         rb.AddForce(movement * speed);
     }
 
@@ -47,12 +56,12 @@ public class PlayerController : MonoBehaviour {
 
     void SetCountText()
     {
-        countText.text = "Count: " + count.ToString();
+        countText.text = "Count: " + count + "/" + qntForWin;
     }
 
     void VerifyIfWon()
     {
-        if (count >= 8)
+        if (count >= qntForWin)
         {
             //winText.text = "You Win!";
             StartNewLevel();
@@ -61,7 +70,7 @@ public class PlayerController : MonoBehaviour {
 
     void RestartLevel()
     {
-        SceneManager.LoadScene("level" + levelNumber.ToString());
+        SceneManager.LoadScene(levelNumber);
     }
 
     void StartNewLevel()
